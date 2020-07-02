@@ -90,3 +90,6 @@ This project is licensed under [`WTFPL` or `do What The Fuck you want to Public 
 
 You can leave an issue on the repository.
 
+## URL
+
+[https://github.com/allnulled/root-api](https://github.com/allnulled/root-api)
