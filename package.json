@@ -8,12 +8,35 @@
     "test": "mocha test/test.js",
     "coverage": "nyc --reporter=html mocha test/test.js"
   },
-  "keywords": ["module","file","value","selector","object","api","structure","function","bind","scope"],
+  "keywords": [
+    "module",
+    "file",
+    "value",
+    "selector",
+    "object",
+    "api",
+    "structure",
+    "function",
+    "bind",
+    "scope"
+  ],
   "author": "allnulled",
   "license": "WTFPL",
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^8.0.1",
     "nyc": "^15.1.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allnulled/root-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/allnulled/root-api/issues"
+  },
+  "homepage": "https://github.com/allnulled/root-api#readme"
 }
