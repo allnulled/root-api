@@ -84,7 +84,7 @@ This logical expression represents the combinations of parameters that makes sen
 
 ## License
 
-This project is licensed under [`WTFPL` or `[do] W[hat] T[he] F[uck] [you] [want] [to] P[ublic] L[icense]`](https://es.wikipedia.org/wiki/WTFPL).
+This project is licensed under [`WTFPL` or `do What The Fuck you want to Public License`](https://es.wikipedia.org/wiki/WTFPL).
 
 ## Issues
 
