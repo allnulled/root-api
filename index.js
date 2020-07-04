@@ -2,9 +2,11 @@ const path = require("path");
 
 const RootAPI = {};
 
+RootAPI.SELF = {};
+
 RootAPI.methods = {};
 
-RootAPI.methods.getProperty = function(selectorP, root, separator) {
+RootAPI.methods.getProperty = function(selectorP, root, separator, selfitem) {
 	if(typeof selectorP === "string") {
 		const selector = selectorP.split(separator);
 		let temp = root;
@@ -18,6 +20,8 @@ RootAPI.methods.getProperty = function(selectorP, root, separator) {
 		return temp;
 	} else if(typeof selectorP !== "undefined") {
 		return selectorP;
+	} else if(selectorP === RootAPI.SELF) {
+		return selfitem;
 	} else {
 		return root;
 	}
@@ -129,12 +133,18 @@ RootAPI.classes.ScopedRoot.prototype = {
 				throw new Error("Property <statement.factory> must be a <string|function>");
 			}
 		} else if ("value" in statement) {
-			output = statement.value;
+			if(typeof statement.value === "function") {
+				const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, statement.value);
+				const refArguments = "with" in statement ? [].concat(statement.with).map(item => RootAPI.methods.getProperty(item, this.root, this.separator)) : [];
+				output = statement.value.bind(refScope, ...refArguments);
+			} else {
+				output = statement.value;
+			}
 		} else {
 			throw new Error("Property <statement.(factory|file|value)> must be something to <ok>");
 		}
 		if((!("factory" in statement)) && (statement.scope || statement.with) && typeof output === "function") {
-			const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator);
+			const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, output);
 			const refArguments = "with" in statement ? [].concat(statement.with).map(item => RootAPI.methods.getProperty(item, this.root, this.separator)) : [];
 			output = output.bind(refScope, ...refArguments);
 		}

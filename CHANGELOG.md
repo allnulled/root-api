@@ -8,3 +8,11 @@
 =============================
 
 - Added `CHANGELOG.md` and the `github` references in `package.json`.
+
+0.0.3
+=============================
+
+- Added the `RootAPI.SELF` final value, in order to allow functions to be scoped in themselves.
+
+
+
