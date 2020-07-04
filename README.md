@@ -2,6 +2,8 @@
 
 Organize your API with flexible customization in a breeze. No dependencies.
 
+![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen) ![Coverage](https://img.shields.io/badge/coverage-%2B90%25-green) ![Downloads](https://img.shields.io/npm/dw/root-api)
+
 ## Installation
 
 `$ npm i -s root-api`
@@ -18,8 +20,7 @@ There are 2 steps:
 This is a test that demonstrates almost all the parameters in action separatedly:
 
 ```js
-// STEP ONE: DEFINE THE TREE:
-const $api = rootAPI.create({
+const $api = RootAPI.create({
 	directory: __dirname + "/lib",
 	separator: ".",
 	root: {
@@ -38,32 +39,123 @@ const $api = rootAPI.create({
 		getMessage: undefined,
 		setMessage: undefined,
 		aboutData: undefined,
+		stack: [],
+		methods: {
+			talk: undefined,
+			run: undefined,
+			jump: undefined,
+			breath: undefined,
+			swim: undefined,
+			meditate: undefined,
+		},
+		doEverything: undefined,
+		classExample: undefined,
 	}
 });
-// STEP TWO: DEFINE THE LEAVES:
-$api.set({ property: "data.code", value: 200 })
-$api.set({ property: "data.code800", file: "data.example.js" });
-$api.set({ property: "data.message", factory: "data.message.factory.js" });
-$api.set({ property: "getMessage", file: "function.getMessage.js" });
-$api.set({ property: "setMessage", factory: "function.setMessage.factory.js" });
-await $api.set({ property: "data.externalSource", factory: "data.externalSource.factory.js", with: ["data.strings.hello", "data.strings.world"], promised: true });
-$api.set({ property: "aboutData", factory: "function.aboutData.factory.js", scope: "data" });
-$api.set({ property: "aboutDataBound", factory: "function.aboutData.factory.js", scope: "data", with: ["data.prop"] });
-$api.set({ property: "sum", factory: function() { return 800 + this.code800 }, scope: "data", with: ["data.prop"] });
-// STEP THREE: TEST THE RESULTS:
-const api = $api.root;
-expect(typeof api).to.equal("object");
-expect(typeof api.getMessage).to.equal("function");
-expect(typeof api.setMessage).to.equal("function");
-expect(typeof api.data).to.equal("object");
-expect(typeof api.data.externalSource).to.equal("string");
-expect(api.data.externalSource).to.equal("hello world x 1000");
-expect(api.classicMessage).to.equal("Hi all!");
-expect(api.data.message).to.equal("Hi all!!");
-expect(api.data.code800).to.equal(800);
-expect(api.data.code).to.equal(200);
-api.setMessage("okay!");
-expect(api.data.message).to.equal("okay!");
+$api.set({
+	property: "data.code",
+	value: 200
+})
+$api.set({
+	property: "data.code800",
+	file: "data.example.js"
+});
+$api.set({
+	property: "data.message",
+	factory: "data.message.factory.js"
+});
+$api.set({
+	property: "getMessage",
+	file: "function.getMessage.js"
+});
+$api.set({
+	property: "setMessage",
+	factory: "function.setMessage.factory.js"
+});
+await $api.set({
+	property: "data.externalSource",
+	factory: "data.externalSource.factory.js",
+	with: ["data.strings.hello", "data.strings.world"],
+	promised: true
+});
+$api.set({
+	property: "aboutData",
+	factory: "function.aboutData.factory.js",
+	scope: "data"
+});
+$api.set({
+	property: "aboutDataBound",
+	factory: "function.aboutData.factory.js",
+	scope: "data",
+	with: ["data.prop"]
+});
+$api.set({
+	property: "sum",
+	factory: function() {
+		return 800 + this.code800
+	},
+	scope: "data",
+	with: ["data.prop"]
+});
+$api.set({
+	property: "methods.talk",
+	value: function(arg) {
+		this.stack.push("Talking: " + (arg ? arg : ""))
+	}
+});
+$api.set({
+	property: "methods.run",
+	value: function(arg) {
+		this.stack.push("Running: " + (arg ? arg : ""))
+	}
+});
+$api.set({
+	property: "methods.jump",
+	value: function(arg) {
+		this.stack.push("Jumping: " + (arg ? arg : ""))
+	}
+});
+$api.set({
+	property: "methods.breath",
+	value: function(arg) {
+		this.stack.push("Breathing: " + (arg ? arg : ""))
+	}
+});
+$api.set({
+	property: "methods.swim",
+	value: function(arg) {
+		this.stack.push("Swiming: " + (arg ? arg : ""))
+	}
+});
+$api.set({
+	property: "methods.meditate",
+	value: function(arg) {
+		this.stack.push("Meditating: " + (arg ? arg : ""))
+	}
+});
+$api.set({
+	property: "doEverything",
+	value: function() {
+		this.methods.talk("something");
+		this.methods.run("something");
+		this.methods.jump("something");
+		this.methods.breath("something");
+		this.methods.swim("something");
+		this.methods.meditate("something");
+	}
+});
+$api.set({
+	property: "classExample",
+	with: [{
+		msg: "My fixed message"
+	}],
+	value: function(data = undefined) {
+		this.a = "a";
+		this.b = "b";
+		this.c = "c";
+		this.message = data.msg;
+	},
+});
 ```
 
 To see the complete example, you will have to go to the `test` folder.
@@ -74,13 +166,14 @@ This logical expression represents the combinations of parameters that makes sen
 
 `property & ( factory | file | value ) & ( with )? & ( scope )?`
 
-- `property` indicates, as a `string` and using the `separator` option which defaults to `.`, the property which is going to be modified.
+- `property` (`string`) indicates, using the `separator` option, which defaults to `.`, the property which is going to be modified.
 - `( factory | file | value )`  indicates the source, and implicitly its type, by which the property is going to be set.
   - `factory` can receive `function` or `string`. On `strings`, it is understood as the path of a file which is a `function` module.
   - `file` can receive `string` as the path of a file which is a `function` module.
   - `value` can receive `any` as the direct value.
-- `with` is optional. Used with functions, it indicates the parameters attached to the main function. In the case of the `factory`, the `factory`'s main function is attached only.
+- `with` (`array`) is optional. Used with functions, it indicates the parameters attached to the main function. In the case of the `factory`, the `factory`'s main function is attached only.
 - `scope` is optional. Used with functions, it indicates the scope bound to the main function. In the case of the the `factory`, the `factory`'s main function is attached only.
+- `promised` indicates that the result should be obtained by an `await` expression. In `factories`, the referred result is the generated value, not the generator function.
 
 ## License
 

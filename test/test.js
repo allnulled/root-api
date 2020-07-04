@@ -1,5 +1,7 @@
-const { expect } = require("chai");
-const rootAPI = require(__dirname + "/../index.js");
+const {
+	expect
+} = require("chai");
+const RootAPI = require(__dirname + "/../index.js");
 
 describe("RootAPI TEST", function() {
 	this.timeout(1000 * 5);
@@ -7,7 +9,7 @@ describe("RootAPI TEST", function() {
 	let $api, api;
 
 	const getAPI = async function() {
-		$api = rootAPI.create({
+		$api = RootAPI.create({
 			directory: __dirname + "/lib",
 			separator: ".",
 			root: {
@@ -26,17 +28,123 @@ describe("RootAPI TEST", function() {
 				getMessage: undefined,
 				setMessage: undefined,
 				aboutData: undefined,
+				stack: [],
+				methods: {
+					talk: undefined,
+					run: undefined,
+					jump: undefined,
+					breath: undefined,
+					swim: undefined,
+					meditate: undefined,
+				},
+				doEverything: undefined,
+				classExample: undefined,
 			}
 		});
-		$api.set({ property: "data.code", value: 200 })
-		$api.set({ property: "data.code800", file: "data.example.js" });
-		$api.set({ property: "data.message", factory: "data.message.factory.js" });
-		$api.set({ property: "getMessage", file: "function.getMessage.js" });
-		$api.set({ property: "setMessage", factory: "function.setMessage.factory.js" });
-		await $api.set({ property: "data.externalSource", factory: "data.externalSource.factory.js", with: ["data.strings.hello", "data.strings.world"], promised: true });
-		$api.set({ property: "aboutData", factory: "function.aboutData.factory.js", scope: "data" });
-		$api.set({ property: "aboutDataBound", factory: "function.aboutData.factory.js", scope: "data", with: ["data.prop"] });
-		$api.set({ property: "sum", factory: function() { return 800 + this.code800 }, scope: "data", with: ["data.prop"] });
+		$api.set({
+			property: "data.code",
+			value: 200
+		})
+		$api.set({
+			property: "data.code800",
+			file: "data.example.js"
+		});
+		$api.set({
+			property: "data.message",
+			factory: "data.message.factory.js"
+		});
+		$api.set({
+			property: "getMessage",
+			file: "function.getMessage.js"
+		});
+		$api.set({
+			property: "setMessage",
+			factory: "function.setMessage.factory.js"
+		});
+		await $api.set({
+			property: "data.externalSource",
+			factory: "data.externalSource.factory.js",
+			with: ["data.strings.hello", "data.strings.world"],
+			promised: true
+		});
+		$api.set({
+			property: "aboutData",
+			factory: "function.aboutData.factory.js",
+			scope: "data"
+		});
+		$api.set({
+			property: "aboutDataBound",
+			factory: "function.aboutData.factory.js",
+			scope: "data",
+			with: ["data.prop"]
+		});
+		$api.set({
+			property: "sum",
+			factory: function() {
+				return 800 + this.code800
+			},
+			scope: "data",
+			with: ["data.prop"]
+		});
+		$api.set({
+			property: "methods.talk",
+			value: function(arg) {
+				this.stack.push("Talking: " + (arg ? arg : ""))
+			}
+		});
+		$api.set({
+			property: "methods.run",
+			value: function(arg) {
+				this.stack.push("Running: " + (arg ? arg : ""))
+			}
+		});
+		$api.set({
+			property: "methods.jump",
+			value: function(arg) {
+				this.stack.push("Jumping: " + (arg ? arg : ""))
+			}
+		});
+		$api.set({
+			property: "methods.breath",
+			value: function(arg) {
+				this.stack.push("Breathing: " + (arg ? arg : ""))
+			}
+		});
+		$api.set({
+			property: "methods.swim",
+			value: function(arg) {
+				this.stack.push("Swiming: " + (arg ? arg : ""))
+			}
+		});
+		$api.set({
+			property: "methods.meditate",
+			value: function(arg) {
+				this.stack.push("Meditating: " + (arg ? arg : ""))
+			}
+		});
+		$api.set({
+			property: "doEverything",
+			value: function() {
+				this.methods.talk("something");
+				this.methods.run("something");
+				this.methods.jump("something");
+				this.methods.breath("something");
+				this.methods.swim("something");
+				this.methods.meditate("something");
+			}
+		});
+		$api.set({
+			property: "classExample",
+			with: [{
+				msg: "My fixed message"
+			}],
+			value: function(data = undefined) {
+				this.a = "a";
+				this.b = "b";
+				this.c = "c";
+				this.message = data.msg;
+			},
+		});
 		return $api.root;
 	};
 
@@ -62,7 +170,9 @@ describe("RootAPI TEST", function() {
 	});
 
 	it("must receive <options.root> as a string to <create>", function() {
-		expect(() => require(__dirname + "/../index.js").create({ root: "r" })).to.throw();
+		expect(() => require(__dirname + "/../index.js").create({
+			root: "r"
+		})).to.throw();
 	});
 
 	it("must set <property> as a string to <ok>", async function() {
@@ -92,14 +202,18 @@ describe("RootAPI TEST", function() {
 			expect(error.message).to.equal("Property <notfound> was not found in its parent (of type object)");
 		}
 		try {
-			await $api.property("callback").value(function() { console.log(this) }).scope("data.notfound.two").ok();
+			await $api.property("callback").value(function() {
+				console.log(this)
+			}).scope("data.notfound.two").ok();
 			api.callback();
 			throw new Error("Failed test 2");
 		} catch (error) {
 			expect(error.message).to.equal("Property <notfound> was not found in its parent (of type object)");
 		}
 		try {
-			await $api.property("callback").value(function() { console.log(this) }).with("data.notfound.two").ok();
+			await $api.property("callback").value(function() {
+				console.log(this)
+			}).with("data.notfound.two").ok();
 			api.callback();
 			throw new Error("Failed test 2");
 		} catch (error) {
@@ -107,7 +221,17 @@ describe("RootAPI TEST", function() {
 		}
 	});
 
-	it("can demonstrate the readme example", async function() {
-		
-	})
+	it("can compose functions easily", async function() {
+		expect(api.stack.length).to.equal(0);
+		api.doEverything();
+		expect(api.stack.length).to.equal(6);
+	});
+
+	it("can create classes effortlessly", async function() {
+		const example1 = new api.classExample();
+		expect(example1 instanceof api.classExample).to.equal(true);
+		expect(example1.a).to.equal("a");
+		expect(example1.message).to.equal("My fixed message");
+	});
+
 });
