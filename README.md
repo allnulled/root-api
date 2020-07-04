@@ -2,6 +2,8 @@
 
 Organize your API with flexible customization in a breeze. No dependencies.
 
+![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen) ![Coverage](https://img.shields.io/badge/coverage-%2B90%25-green) ![Downloads](https://img.shields.io/npm/dw/root-api)
+
 ## Installation
 
 `$ npm i -s root-api`
