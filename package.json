@@ -1,6 +1,6 @@
 {
   "name": "root-api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Organize your API with flexible customization in a breeze. No dependencies.",
   "main": "index.js",
   "scripts": {
