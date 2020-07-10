@@ -6,7 +6,7 @@ RootAPI.SELF = {};
 
 RootAPI.methods = {};
 
-RootAPI.methods.getProperty = function(selectorP, root, separator, selfitem) {
+RootAPI.methods.getProperty = function(selectorP, root, separator, selfitem = undefined) {
 	if(typeof selectorP === "string") {
 		const selector = selectorP.split(separator);
 		let temp = root;
@@ -111,6 +111,11 @@ RootAPI.classes.ScopedRoot.prototype = {
 			try {
 				const fileId = path.resolve(this.directory, statement.file);
 				output = require(fileId);
+				if(typeof output === "function") {
+					const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, output);
+					const refArguments = "with" in statement ? [].concat(statement.with).map(item => RootAPI.methods.getProperty(item, this.root, this.separator)) : [];
+					output = output.bind(refScope, ...refArguments)
+				}
 			} catch(error) {
 				throw error;
 			}
@@ -119,14 +124,14 @@ RootAPI.classes.ScopedRoot.prototype = {
 				try {
 					const factoryId = path.resolve(this.directory, statement.factory);
 					const factoryFunction = require(factoryId);
-					const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator);
+					const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, factoryFunction);
 					const refArguments = "with" in statement ? [].concat(statement.with).map(item => RootAPI.methods.getProperty(item, this.root, this.separator)) : [];
 					output = factoryFunction.call(refScope, ...refArguments)
 				} catch(error) {
 					throw error;
 				}
 			} else if(typeof statement.factory === "function") {
-				const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator);
+				const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, statement.factory);
 				const refArguments = "with" in statement ? [].concat(statement.with).map(item => RootAPI.methods.getProperty(item, this.root, this.separator)) : [];
 				output = statement.factory.call(refScope, ...refArguments);
 			} else {
@@ -144,7 +149,7 @@ RootAPI.classes.ScopedRoot.prototype = {
 			throw new Error("Property <statement.(factory|file|value)> must be something to <ok>");
 		}
 		if((!("factory" in statement)) && (statement.scope || statement.with) && typeof output === "function") {
-			const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, output);
+			const refScope = RootAPI.methods.getProperty(statement.scope, this.root, this.separator, output, statement.factory);
 			const refArguments = "with" in statement ? [].concat(statement.with).map(item => RootAPI.methods.getProperty(item, this.root, this.separator)) : [];
 			output = output.bind(refScope, ...refArguments);
 		}

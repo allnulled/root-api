@@ -37,6 +37,8 @@ describe("RootAPI TEST", function() {
 					swim: undefined,
 					meditate: undefined,
 				},
+				tests: {},
+				classes: {},
 				doEverything: undefined,
 				classExample: undefined,
 			}
@@ -232,6 +234,20 @@ describe("RootAPI TEST", function() {
 		expect(example1 instanceof api.classExample).to.equal(true);
 		expect(example1.a).to.equal("a");
 		expect(example1.message).to.equal("My fixed message");
+	});
+
+	it("can create functions from files setting by default the 'scope' to the root", function() {
+		$api.set({ property: "tests.TestOK", file: "function.TestOK.js" })
+		const itemOK = api.tests.TestOK();
+		expect(itemOK).to.equal(true);
+	});
+
+	it("can force the scope to oneself", function() {
+		$api.set({ property: "classes.ClassOK", file: "class.ClassOK.js" })
+		const itemOK = new api.classes.ClassOK();
+		expect(itemOK instanceof api.classes.ClassOK).to.equal(true);
+		expect(itemOK.a).to.equal("a");
+		expect(itemOK.b).to.equal("b");
 	});
 
 });
